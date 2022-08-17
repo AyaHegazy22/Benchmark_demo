@@ -56,7 +56,7 @@ materials_file.export_to_xml()
 
 #geometry
 x_plane1 = openmc.XPlane(0, boundary_type = 'vacuum')
-x_plane2 = openmc.XPlane(20000.0, boundary_type = 'vacuum')
+x_plane2 = openmc.XPlane(200.0, boundary_type = 'vacuum')
 y_plane1 = openmc.YPlane(0, boundary_type = 'vacuum')
 y_plane2 = openmc.YPlane(2.0, boundary_type = 'vacuum')
 z_plane1 = openmc.ZPlane(0, boundary_type = 'vacuum')
@@ -103,7 +103,6 @@ settings.temperature = {'default': 300.0,
                         'range': (294.0, 3000.0)}
 
 settings.batches = 50
-settings.inactive = 10
 settings.particles = 1000
 
 settings.export_to_xml()
