@@ -7,10 +7,15 @@
 
 # These auxiliary variables are all just for visualizing the solution and
 # the mapping - none of these are part of the calculation sequence
+
 [AuxVariables]
   [cell_id]
     family = MONOMIAL
     order = CONSTANT
+  []
+  [heat_source]
+  family = MONOMIAL
+  order = CONSTANT
   []
   [cell_instance]
     family = MONOMIAL
@@ -46,25 +51,25 @@
     variable = cell_temperature
   []
   [cell_density]
-    type = FunctionAux
-    variable = cell_density
-    function = density_fun
-  []
-[]
-
-[Functions]
-   [density_fun]
      #assume linear doppler effect
-     type = ParsedFunction
-     value ='1+0.0001/(4*0.025)*(solid_temp-294.0)'
-     vars = 'solid_temp'
-     vals = 'solid_temp'
+     type = ParsedAux
+     variable = solid_temp
+     args = 'solid_temp'
+     function ='1+0.0001/(4*0.025)*(solid_temp-294.0)'
    []
+  [changing_units] #this changes the unit of the flux to heat_source for the solid
+    type = ParsedAux
+    variable = heat_source
+    args = 'flux'
+    function = 'flux*10*1.6*10E-13' #flux*macroscopic_crosssection*energy released per absorption, units of W/m^2
+  []
 []
 
 [Problem]
   type = OpenMCCellAverageProblem
   source_strength = 6.65E11
+  tally_score = flux
+  tally_name = flux
   scaling = 100.0
   solid_blocks = '0'
   tally_type = cell
@@ -91,8 +96,10 @@
   []
 []
 
+
+
 [Transfers]
-  [solid_temp_to_openmc]
+  [solid_temp]
     type = MultiAppCopyTransfer
     source_variable = T
     variable = solid_temp
@@ -107,10 +114,6 @@
 []
 
 [Postprocessors]
-  [solid_temp]
-    type = Receiver
-    variable = 'T'
-  []
   [heat_source]
     type = ElementIntegralVariablePostprocessor
     variable = heat_source
