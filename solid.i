@@ -95,7 +95,6 @@
 
 [Executioner]
   type = Transient
-  dt = 0.5
 
   nl_abs_tol = 1e-5
   nl_rel_tol = 1e-16

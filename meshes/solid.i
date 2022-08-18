@@ -7,7 +7,7 @@
   xmin = 0
   ymin = 0
   zmin = 0
-  xmax = 2.0
-  ymax = 0.02
-  zmax = 0.02
+  xmax = 200.0
+  ymax = 2.0
+  zmax = 2.0
 []

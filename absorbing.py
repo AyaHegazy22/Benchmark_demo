@@ -92,7 +92,7 @@ upper_right = (0.1, 2.0, 2.0)
 uniform_dist = openmc.stats.Box(lower_left, upper_right)
 
 source = openmc.Source()
-source.strength = 6.65E11
+source.strength = 1.0
 source.space = uniform_dist
 source.angle = openmc.stats.Monodirectional(reference_uvw=[1.0, 0.0, 0.0])
 settings.source = source
