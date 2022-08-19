@@ -1,7 +1,7 @@
 [Mesh]
   [solid]
     type = FileMeshGenerator
-    file = meshes/solid_in.e
+    file = ../meshes/solid_in.e
   []
 []
 
@@ -36,34 +36,10 @@
     boundary = 'left'
     value = 294.0
   []
-  [infinite_boundary]
+  [insulated]
     type = NeumannBC
     variable = T
-    boundary = 'right'
-    value = 0
-  []
-  [top_boundary]
-    type = NeumannBC
-    variable = T
-    boundary = 'top'
-    value = 0
-  []
-  [bottom_boundary]
-    type = NeumannBC
-    variable = T
-    boundary = 'bottom'
-    value = 0
-  []
-  [front_boundary]
-    type = NeumannBC
-    variable = T
-    boundary = 'front'
-    value = 0
-  []
-  [back_boundary]
-    type = NeumannBC
-    variable = T
-    boundary = 'back'
+    boundary = 'right top bottom front back'
     value = 0
   []
 []
@@ -72,7 +48,7 @@
 [Materials]
   [absorbing]
     type = HeatConductionMaterial
-    thermal_conductivity = 0.6
+    thermal_conductivity = ${fparse 0.6 / 100.0} # W/cm-K
     block = '0'
   []
 []
@@ -95,7 +71,6 @@
 
 [Executioner]
   type = Transient
-
   nl_abs_tol = 1e-5
   nl_rel_tol = 1e-16
   petsc_options_value = 'hypre boomeramg'

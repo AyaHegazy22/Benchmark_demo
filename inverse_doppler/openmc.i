@@ -1,18 +1,14 @@
-cm2_per_barn = 1e-24
 joule_per_ev = 1.60218e-19
 
-N0     = ${fparse 0.025 / cm2_per_barn}  # initial number density, (atom / cm^3)
-q      = ${fparse 1.0e6 * joule_per_ev}  # energy release per absorption (J)
-k      = ${fparse 0.6 / 100.0}           # solid thermal conductivity (W/cm-K)
-sigma0 = ${fparse 4.0 * cm2_per_barn}    # absorption cross section (m^2)
-alpha  = -0.0001                         # linear Doppler coefficient (1 / cm-K)
+q      = ${fparse 1.0e6}                 # energy release per absorption (eV)
+Sigma0 = ${fparse 4.0 * 0.025}           # Initial macroscopic XS, 1/cm
 T0     = 293.6                           # surface temperature (K)
 Y0     = 6.65e11                         # source intensity (n / cm2-s)
 
 [Mesh]
   [solid]
     type = FileMeshGenerator
-    file = meshes/solid_in.e
+    file = ../meshes/solid_in.e
   []
 []
 
@@ -34,13 +30,8 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
     order = CONSTANT
   []
 
-  # Variables added to convert into proper heat source term for the power in the solid,
-  # as well as for the density applied to the OpenMC cells
-  [number_density] # atoms / m^3
-    family = MONOMIAL
-    order = CONSTANT
-  []
-  [heat_source] # W / m^3
+  # Variables added to convert into proper heat source term for the power in the solid
+  [heat_source] # W / cm^3
     family = MONOMIAL
     order = CONSTANT
   []
@@ -64,34 +55,22 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
     variable = cell_temperature
   []
 
-  #[density] # This is the density actually sent to OpenMC, which here needs to be units of kg/m^3
-  #  type = ParsedAux
-  #  variable = density
-  #  args = 'number_density'
-  #  function = 'number_density / ${N0} * 1000'
-  #[]
-
-  # Number density, for linear Doppler feedback. This is based on Eq. (3a) in the paper.
-  [number_density]
-     # assume linear doppler effect
-     type = ParsedAux
-     variable = number_density
-     args = 'temp'
-     #function = '${N0} * (1.0 - ${alpha} / ${sigma0} / ${N0} * (temp - ${T0}))'
-     function = '${N0}'
-  []
-
   # Change the unit of the 'flux' (neutrons / m^2 / s) into a volumetric power. This is
   # based on Eq. (5b) in the paper, which shows the volumetric power is q / k * Sigma * flux
   [changing_units]
     type = ParsedAux
     variable = heat_source
-    args = 'flux number_density'
-    function = 'flux * ${q} / ${k} * (${sigma0} * number_density)'
-    #                                 |__________________________|
-    #                                            ^
-    #                                            |
-    #                               [ this is the macroscopic XS]
+    args = 'flux temp'
+    function = 'flux * ${q} * ${joule_per_ev} * ${Sigma0} * sqrt(${T0} / temp)'
+    execute_on = 'timestep_end'
+  []
+[]
+
+[ICs]
+  [temp]
+    type = ConstantIC
+    variable = temp
+    value = ${T0}
   []
 []
 
@@ -99,16 +78,18 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
   type = OpenMCCellAverageProblem
   verbose = true
   check_zero_tallies = false
-  source_strength = ${Y0}
+  source_strength = ${fparse Y0 * 2.0 * 2.0} # multiply by the left area to get units of neutrons / s
   tally_score = flux
   tally_name = flux
+
+  initial_properties = xml
 
   particles = 10000
 
   solid_blocks = '0'
 
   tally_type = mesh
-  mesh_template = meshes/solid_in.e
+  mesh_template = ../meshes/solid_in.e
   solid_cell_level = 0
 []
 
@@ -117,7 +98,6 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
   steady_state_detection = true
   check_aux = true
   steady_state_tolerance = 1e-3
-  num_steps = 2
 []
 
 [MultiApps]
@@ -129,8 +109,6 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
     sub_cycling = true
   []
 []
-
-
 
 [Transfers]
   [solid_temp]
@@ -148,16 +126,17 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
 []
 
 [Postprocessors]
-  [heat_source]
-    type = ElementIntegralVariablePostprocessor
+  [max_heat_source]
+    type = ElementExtremeValue
     variable = heat_source
-    execute_on = 'transfer initial timestep_end'
+    execute_on = 'timestep_end'
   []
   [max_flux]
     type = ElementExtremeValue
     variable = flux
   []
 []
+
 [Outputs]
   exodus = true
 []
