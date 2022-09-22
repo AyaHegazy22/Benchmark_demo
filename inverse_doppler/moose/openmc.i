@@ -8,7 +8,7 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
 [Mesh]
   [solid]
     type = FileMeshGenerator
-    file = ../meshes/solid_in.e
+    file = ../../meshes/solid_in.e
   []
 []
 
@@ -89,7 +89,7 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
   solid_blocks = '0'
 
   tally_type = mesh
-  mesh_template = ../meshes/solid_in.e
+  mesh_template = ../../meshes/solid_in.e
   solid_cell_level = 0
 []
 

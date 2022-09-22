@@ -1,7 +1,7 @@
 [Mesh]
   [solid]
     type = FileMeshGenerator
-    file = ../meshes/solid_in.e
+    file = ../../meshes/solid_in.e
   []
 []
 

@@ -8,7 +8,7 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
 [Mesh]
   [solid]
     type = FileMeshGenerator
-    file = meshes/solid_in.e
+    file = ../../meshes/solid_in.e
   []
 []
 
@@ -35,9 +35,13 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
     family = MONOMIAL
     order = CONSTANT
   []
-  [nek_temp]
-    # This initial value will be used in the first heat source sent to nekRS
-    initial_condition = 293.6 
+[]
+
+[ICs]
+  [temp]
+    type = ConstantIC
+    variable = temp
+    value = 293.6
   []
 []
 
@@ -64,8 +68,8 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
   [changing_units]
     type = ParsedAux
     variable = heat_source
-    args = 'flux nek_temp'
-    function = 'flux * ${q} * ${joule_per_ev} * ${Sigma0} * sqrt(${T0} / nek_temp)'
+    args = 'flux temp'
+    function = 'flux * ${q} * ${joule_per_ev} * ${Sigma0} * sqrt(${T0} / temp)'
   []
 []
 
@@ -84,7 +88,7 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
   solid_blocks = '0'
 
   tally_type = mesh
-  mesh_template = meshes/solid_in.e
+  mesh_template = ../../meshes/solid_in.e
   solid_cell_level = 0
 []
 
@@ -108,7 +112,7 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
   [nek_temp]
     type = MultiAppMeshFunctionTransfer
     source_variable = temp
-    variable = nek_temp
+    variable = temp
     from_multi_app = nek
   []
   [source_to_solid]
