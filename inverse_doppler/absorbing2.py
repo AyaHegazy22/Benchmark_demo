@@ -43,7 +43,7 @@ scatter_matrix = np.array(scatter_matrix)
 scatter_matrix = np.rollaxis(scatter_matrix, 0, 3)
 
 for i in range(len(temps)):
-  E = sigma0 * N0 * math.sqrt(T0 / temps[i])
+  E = N0*sigma0 *(1-alpha/(sigma0*N0)*(temps[i]-T0))
   abs_xsdata.set_total([E], temperature=temps[i])
   abs_xsdata.set_absorption([E], temperature=temps[i])
   abs_xsdata.set_scatter_matrix(scatter_matrix, temperature=temps[i])
