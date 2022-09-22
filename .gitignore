@@ -1,3 +1,4 @@
 *.xml
 *out.e
 *.h5
+fluid0.f*

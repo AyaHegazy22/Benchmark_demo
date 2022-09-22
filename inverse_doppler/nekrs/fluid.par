@@ -20,6 +20,6 @@
   residualProj = false
 [TEMPERATURE]
   conductivity = 0.006
-  rhoCp = 1.0
+  rhoCp = 0.001
   boundaryTypeMap = t, I, I, I, I, I
-  residualTol = 1.0e-3
+  residualTol = 1.0e-6

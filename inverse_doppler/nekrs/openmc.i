@@ -105,6 +105,7 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
     app_type = CardinalApp
     input_files = 'nek.i'
     execute_on = timestep_end
+    sub_cycling = true
   []
 []
 
