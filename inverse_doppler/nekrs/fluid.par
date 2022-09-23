@@ -4,7 +4,7 @@
 [GENERAL]
   stopAt = numSteps
   numSteps = 10
-  dt = 0.9
+  dt = 10.0
   polynomialOrder = 1
   writeControl = timeStep
   writeInterval = 10
