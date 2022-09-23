@@ -95,8 +95,9 @@ Y0     = 6.65e11                         # source intensity (n / cm2-s)
 [Executioner]
   type = Transient
   steady_state_detection = true
-  dt = 1.0
+  dt = 10.0
   steady_state_tolerance = 1e-3
+  check_aux = true
 []
 
 [MultiApps]
