@@ -1,7 +1,7 @@
 [Mesh]
   type = GeneratedMesh
   dim = 3
-  nx = 2000
+  nx = 200
   ny = 2
   nz = 2
   xmin = 0
