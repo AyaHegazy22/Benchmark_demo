@@ -81,7 +81,7 @@ A  = ${fparse 1+(2*-0.0001*6.65e11* 1.60218e-19*1.0e6/(0.006*(4.0 * 0.025)^2))} 
     type = ParsedAux
     variable = power
     args = 'T'
-    function = '4*${Y0}*${A}*exp(-sqrt(${A})*${Sigma0}*x)/((1+sqrt(${A}))-(1-sqrt(${A}))*exp(-sqrt(${A})*${Sigma0}*x))^2* ${q} * ${joule_per_ev} * ${Sigma0} * (1+0.0001/(${Sigma0})*(T-${T0}))'
+    function = '4*${Y0}*${A}*exp(-sqrt(${A})*${Sigma0}*x)/((1+sqrt(${A}))-(1-sqrt(${A}))*exp(-sqrt(${A})*${Sigma0}*x))^2* ${q} * ${joule_per_ev} * ${Sigma0} * (1-0.0001/(${Sigma0})*(T-${T0}))' #eq.1 in the paper
     execute_on = 'timestep_begin'
     use_xyzt = true
   []
