@@ -76,15 +76,6 @@ A  = ${fparse 1+(2*-0.0001*6.65e11* 1.60218e-19*1.0e6/(0.006*(4.0 * 0.025)^2))} 
   []
 []
 
-
-[Variables]
-    [temp]
-    family = MONOMIAL
-    order = CONSTANT
-  []
-[]
-
-
 [AuxKernels]
   [power]
     type = ParsedAux
