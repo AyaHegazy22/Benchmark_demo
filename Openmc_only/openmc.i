@@ -95,17 +95,16 @@ A  = ${fparse 1+(2*-0.0001*6.65e11* 1.60218e-19*1.0e6/(0.006*(4.0 * 0.025)^2))} 
 
   initial_properties = xml
 
-  particles = 10000
-  #first_iteration_particles = 10000
+  particles = 100000
+  max_batches = 1000
   solid_blocks = '0'
 
   tally_type = mesh
   mesh_template = meshes/solid_in.e
   solid_cell_level = 0
   relaxation = robbins_monro
-  #relaxation = dufek_gudowski
-  #relaxation = constant
-  #relaxation_factor = 0.7
+  tally_trigger = rel_err
+  tally_trigger_threshold = 1e-2
 []
 
 [Executioner]
