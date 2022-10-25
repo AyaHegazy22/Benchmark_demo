@@ -72,7 +72,7 @@ A  = ${fparse 1+(2*-0.0001*6.65e11* 1.60218e-19*1.0e6/(0.006*(4.0 * 0.025)^2))} 
     type = ParsedAux
     variable = heat_source
     args = 'flux temp'
-    function = 'flux * ${q} * ${joule_per_ev} * ${Sigma0} * (1+0.0001/(${Sigma0})*(temp-${T0}))'
+    function = 'flux * ${q} * ${joule_per_ev} * ${Sigma0} * (1-0.0001/(${Sigma0})*(temp-${T0}))'
     execute_on = 'timestep_end'
   []
 []
