@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 import matplotlib.pyplot as plt
 import numpy as np
 np.random.BitGenerator = np.random.bit_generator.BitGenerator
-import openmc
+import openmc.lib
 import openmc.mgxs
 import h5py
 import math
@@ -78,11 +78,8 @@ materials_file.cross_sections = 'mgxs.h5'
 
 materials_file.export_to_xml()
 
-# geometry
-#number of axial coords
-###############################################
 axial_coords = np.linspace(0.0, height, N + 1)
-###############################################
+axial_mid_coords = np.linspace(height / 2.0, height + height / 2.0, N)
 y_plane1 = openmc.YPlane(0.0, boundary_type = 'reflective')
 y_plane2 = openmc.YPlane(2.0, boundary_type = 'reflective')
 z_plane1 = openmc.ZPlane(0.0, boundary_type = 'reflective')
@@ -110,7 +107,6 @@ settings.energy_mode = 'multi-group'
 settings.verbosity = 6
 
 # source in one side
-# TODO: figure out how to do a plane source, if possible
 settings.run_mode = 'fixed source'
 lower_left = (0.0, 0.0, 0.0)
 upper_right = (0.0001, 2.0, 2.0)
@@ -122,14 +118,55 @@ source.space = uniform_dist
 source.angle = openmc.stats.Monodirectional(reference_uvw=[1.0, 0.0, 0.0])
 settings.source = source
 
-settings.temperature = {'default': T1,
+settings.temperature = {'default': T0,
 
                         # We need to use 'nearest' for now because OpenMC is missing some logic
                         # inside to know how to let us set temperatures via interpolation when
                         # using multigroup mode
                         'method': 'nearest'}
 
-settings.batches = 200
+settings.batches = 20
 settings.particles = 5000
-
 settings.export_to_xml()
+
+cell_filter = openmc.CellFilter(abs_cells)
+flux_tally = openmc.Tally(tally_id = 1)
+flux_tally.filters.append(cell_filter)
+flux_tally.scores = ['flux']
+tallies = openmc.Tallies([flux_tally])
+tallies.export_to_xml()
+
+with openmc.lib.run_in_memory():
+  # change cell temperatures, to 295 in left half of domain and 395 in right half of domain.
+  # This does NOTHING to the cross sections used.
+  analytic = []
+
+  for i in range(N):
+    x = height / N * i + height / N / 2.0
+    cell_id, cell_instance = openmc.lib.find_cell((x, 1.0, 1.0))
+    if (x < height / 2.0):
+      cell_id.set_temperature(T0, cell_instance)
+      analytic.append(math.exp(-E0 * x))
+    else:
+      cell_id.set_temperature(T1, cell_instance)
+
+      Y1 = math.exp(-E0 * height / 2.0) / math.exp(-E1 * height / 2.0)
+      analytic.append(Y1 * math.exp(-E1 * x))
+
+  openmc.lib.reset()
+
+  openmc.lib.run()
+
+  flux = openmc.lib.tallies[1].mean
+  bin_vol = height / N
+  t = []
+  for i in range(len(flux)):
+    t.append(flux[i] / bin_vol)
+
+  plt.plot(axial_mid_coords, t, label='OpenMC')
+  plt.plot(axial_mid_coords, analytic, label='Analytic')
+  plt.title('Changing Cell Temperatures')
+  plt.xlabel('X Coordinate')
+  plt.ylabel('Flux')
+  plt.savefig('flux_with_cell_temps.pdf')
+  plt.close()
