@@ -1,0 +1,25 @@
+[OCCA]
+  backend = CPU
+
+[GENERAL]
+  stopAt = numSteps
+  #numSteps = 10
+  dt = 1.0
+  polynomialOrder = 1
+  writeControl = timeStep
+  writeInterval = 200
+  extrapolation = subCycling
+
+[VELOCITY]
+  boundaryTypeMap = w, w, w, w, w, w
+  residualTol = 1.0e-6
+  residualProj = false 
+  solver = none
+[PRESSURE]
+  residualTol = 1.0e-6
+  residualProj = false
+[TEMPERATURE]
+  conductivity = 0.006
+  rhoCp = 0.00001
+  boundaryTypeMap = t, I, I, I, I, I
+  residualTol = 1.0e-6
